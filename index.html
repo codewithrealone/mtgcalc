@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>5-Phase Martingale Calculator</title>
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, sans-serif;
+    }
+
+    body{
+      background:#0f172a;
+      color:white;
+      padding:30px;
+    }
+
+    .container{
+      max-width:950px;
+      margin:auto;
+      background:#111827;
+      padding:25px;
+      border-radius:15px;
+      box-shadow:0 0 20px rgba(0,0,0,0.4);
+    }
+
+    h1{
+      text-align:center;
+      margin-bottom:10px;
+      color:#38bdf8;
+    }
+
+    p{
+      text-align:center;
+      margin-bottom:25px;
+      color:#cbd5e1;
+    }
+
+    .input-box{
+      display:flex;
+      gap:10px;
+      margin-bottom:20px;
+      flex-wrap:wrap;
+    }
+
+    input, select{
+      flex:1;
+      padding:15px;
+      border:none;
+      border-radius:10px;
+      font-size:16px;
+      outline:none;
+    }
+
+    button{
+      padding:15px 25px;
+      border:none;
+      background:#38bdf8;
+      color:#000;
+      font-weight:bold;
+      border-radius:10px;
+      cursor:pointer;
+      transition:0.3s;
+    }
+
+    button:hover{
+      background:#0ea5e9;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      overflow:hidden;
+      border-radius:10px;
+      margin-top:20px;
+    }
+
+    th{
+      background:#1e293b;
+      padding:15px;
+      color:#38bdf8;
+    }
+
+    td{
+      padding:14px;
+      text-align:center;
+      border-bottom:1px solid #334155;
+    }
+
+    tr:hover{
+      background:#1f2937;
+    }
+
+    .profit{
+      color:#22c55e;
+      font-weight:bold;
+    }
+
+    .warning{
+      margin-top:20px;
+      color:#fbbf24;
+      font-size:14px;
+      line-height:1.7;
+    }
+
+    @media(max-width:700px){
+      .input-box{
+        flex-direction:column;
+      }
+
+      table{
+        font-size:13px;
+      }
+
+      th, td{
+        padding:10px;
+      }
+    }
+    
+    footer a{
+      color: LightBlue;
+      text-decoration: none;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <h1>5-Phase Martingale Calculator</h1>
+
+  <p>
+    Smart Risk Management Tool For Binary Traders.
+  </p>
+
+  <div class="input-box">
+
+    <select id="currency">
+      <option value="$">Dollar ($) min: $80</option>
+      <option value="₦">Naira (₦) min: ₦100,000</option>
+    </select>
+
+    <input type="number" id="capital" placeholder="Enter Your Trading Capital">
+
+    <button onclick="generateTable()">Calculate</button>
+
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Martingale Phase</th>
+        <th>Entry Capital</th>
+        <th>Total Risked</th>
+        <th>Avg Profit If Win</th>
+      </tr>
+    </thead>
+    <tbody id="resultTable"></tbody>
+  </table>
+
+  <div class="warning">
+    ⚠️ Designed for 85%–95% payout brokers.<br>
+    System ensures full loss recovery + consistent profitability at every winning stage.
+  </div>
+
+</div>
+
+<script>
+
+function generateTable(){
+
+  const capital = parseInt(document.getElementById("capital").value);
+  const currency = document.getElementById("currency").value;
+
+  if(!capital || capital <= 0){
+    alert("Please enter a valid capital.");
+    return;
+  }
+
+  if(currency === "$" && capital < 50){
+    alert("Minimum dollar capital is $50");
+    return;
+  }
+
+  if(currency === "₦" && capital < 100000){
+    alert("Minimum naira capital is ₦100,000");
+    return;
+  }
+
+  const tbody = document.getElementById("resultTable");
+  tbody.innerHTML = "";
+
+  const payoutMin = 0.85;
+  const payoutMax = 0.95;
+  const payoutAvg = 0.90;
+
+  let totalLoss = 0;
+
+  let targetProfit;
+
+  if(currency === "$"){
+    targetProfit = Math.max(1, Math.floor(capital * 0.02));
+  } else {
+    targetProfit = Math.max(500, Math.floor((capital * 0.02) / 500) * 500);
+  }
+
+  function format(amount){
+    return amount.toLocaleString();
+  }
+
+  for(let i = 0; i < 5; i++){
+
+    let entry = Math.ceil((totalLoss + targetProfit) / payoutAvg);
+
+    if(currency === "₦"){
+      entry = Math.ceil(entry / 500) * 500;
+    }
+
+    const minProfit = Math.floor(entry * payoutMin);
+    const maxProfit = Math.floor(entry * payoutMax);
+
+    const avgProfit = Math.floor((minProfit + maxProfit) / 2);
+
+    totalLoss += entry;
+
+    let phase =
+      i === 0 ? "1st MTG" :
+      i === 1 ? "2nd MTG" :
+      i === 2 ? "3rd MTG" :
+      i === 3 ? "4th MTG" :
+      "5th MTG";
+
+    tbody.innerHTML += `
+      <tr>
+        <td>${phase}</td>
+        <td>${currency}${format(entry)}</td>
+        <td>${currency}${format(totalLoss)}</td>
+        <td class="profit">${currency}${format(avgProfit)}</td>
+      </tr>
+    `;
+  }
+}
+
+// Allow Enter / Go button to trigger calculation
+document.addEventListener("keydown", function(event){
+
+  if(event.key === "Enter"){
+    event.preventDefault();
+    generateTable();
+  }
+
+});
+
+// Close keyboard after pressing Enter / Go
+document.addEventListener("keydown", function(event){
+
+  if(event.key === "Enter"){
+    event.preventDefault();
+
+    // remove focus from input (this closes keyboard on mobile)
+    document.activeElement.blur();
+
+    generateTable();
+  }
+
+});
+
+</script>
+<br>
+<footer class="footer" style="font-size: 12px">
+   <p>All Rights reserved!
+   <a href="#" ></a>
+  <a href="#" style="">
+    — @realonesignals
+  </a></p>
+</footer>
+
+</body>
+</html>
