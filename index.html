@@ -3,165 +3,348 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>5-Phase Martingale Calculator</title>
+  <title>Martingale Calculator — @realonesignals</title>
+
+  <!-- PWA Meta -->
+  <meta name="description" content="Smart Martingale Risk Management Tool for Binary Traders by RealOne Signals" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="MTG Calc" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon.png" />
 
   <style>
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-      font-family:Arial, sans-serif;
+    *, *::before, *::after {
+      margin: 0; padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
     }
 
-    body{
-      background:#0f172a;
-      color:white;
-      padding:30px;
+    body {
+      background: #0f172a;
+      color: white;
+      padding: 30px 16px;
+      min-height: 100vh;
     }
 
-    .container{
-      max-width:950px;
-      margin:auto;
-      background:#111827;
-      padding:25px;
-      border-radius:15px;
-      box-shadow:0 0 20px rgba(0,0,0,0.4);
+    .container {
+      max-width: 980px;
+      margin: auto;
+      background: #111827;
+      padding: 28px 25px;
+      border-radius: 15px;
+      box-shadow: 0 0 28px rgba(0,0,0,0.5);
     }
 
-    h1{
-      text-align:center;
-      margin-bottom:10px;
-      color:#38bdf8;
+    h1 {
+      text-align: center;
+      margin-bottom: 6px;
+      color: #38bdf8;
+      font-size: 1.65rem;
+      letter-spacing: 0.5px;
     }
 
-    p{
-      text-align:center;
-      margin-bottom:25px;
-      color:#cbd5e1;
+    .subtitle {
+      text-align: center;
+      margin-bottom: 22px;
+      color: #cbd5e1;
+      font-size: 14px;
     }
 
-    .input-box{
-      display:flex;
-      gap:10px;
-      margin-bottom:20px;
-      flex-wrap:wrap;
+    /* ── Phase Switcher ── */
+    .phase-switcher {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
     }
 
-    input, select{
-      flex:1;
-      padding:15px;
-      border:none;
-      border-radius:10px;
-      font-size:16px;
-      outline:none;
+    .phase-btn {
+      padding: 10px 22px;
+      border: 2px solid #334155;
+      background: transparent;
+      color: #94a3b8;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.25s;
+      letter-spacing: 0.3px;
     }
 
-    button{
-      padding:15px 25px;
-      border:none;
-      background:#38bdf8;
-      color:#000;
-      font-weight:bold;
-      border-radius:10px;
-      cursor:pointer;
-      transition:0.3s;
+    .phase-btn:hover { border-color: #38bdf8; color: #38bdf8; }
+    .phase-btn.active { background: #38bdf8; border-color: #38bdf8; color: #000; }
+
+    /* ── Inputs ── */
+    .input-box {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
     }
 
-    button:hover{
-      background:#0ea5e9;
+    select, input[type="number"] {
+      flex: 1;
+      min-width: 160px;
+      padding: 14px 15px;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      outline: none;
+      background: #1e293b;
+      color: #f1f5f9;
     }
 
-    table{
-      width:100%;
-      border-collapse:collapse;
-      overflow:hidden;
-      border-radius:10px;
-      margin-top:20px;
+    select option { background: #1e293b; }
+
+    button.calc-btn {
+      padding: 14px 26px;
+      border: none;
+      background: #38bdf8;
+      color: #000;
+      font-weight: bold;
+      font-size: 15px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.25s;
+      white-space: nowrap;
     }
 
-    th{
-      background:#1e293b;
-      padding:15px;
-      color:#38bdf8;
+    button.calc-btn:hover { background: #0ea5e9; }
+
+    /* ── Min hint ── */
+    .min-hint {
+      text-align: center;
+      font-size: 12.5px;
+      color: #64748b;
+      margin-bottom: 18px;
+      min-height: 18px;
+      transition: color 0.2s;
+    }
+    .min-hint.warn { color: #f87171; }
+
+    /* ── Table ── */
+    .table-wrap { overflow-x: auto; border-radius: 10px; }
+
+    table { width: 100%; border-collapse: collapse; min-width: 500px; }
+    thead tr { background: #1e293b; }
+
+    th {
+      padding: 14px 12px;
+      color: #38bdf8;
+      font-size: 13.5px;
+      text-align: center;
+      white-space: nowrap;
     }
 
-    td{
-      padding:14px;
-      text-align:center;
-      border-bottom:1px solid #334155;
+    td {
+      padding: 13px 12px;
+      text-align: center;
+      border-bottom: 1px solid #1e293b;
+      font-size: 14px;
     }
 
-    tr:hover{
-      background:#1f2937;
+    tr:hover td { background: #1f2937; }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 0.4px;
+    }
+    .badge-entry { background: #1d4ed8; color: #bfdbfe; }
+    .badge-mtg   { background: #292524; color: #a8a29e; }
+    td.profit    { color: #22c55e; font-weight: bold; }
+
+    #emptyRow td { color: #475569; padding: 30px; font-style: italic; }
+
+    .warning {
+      margin-top: 20px;
+      color: #fbbf24;
+      font-size: 13px;
+      line-height: 1.8;
     }
 
-    .profit{
-      color:#22c55e;
-      font-weight:bold;
+    footer {
+      text-align: center;
+      margin-top: 22px;
+      font-size: 12px;
+      color: #475569;
+    }
+    footer a { color: #7dd3fc; text-decoration: none; }
+    footer a:hover { color: #38bdf8; }
+
+    /* ── PWA Install Popup ── */
+    #pwa-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 999;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 0;
+    }
+    #pwa-overlay.show { display: flex; }
+
+    #pwa-popup {
+      background: #1e293b;
+      border-radius: 20px 20px 0 0;
+      padding: 28px 24px 36px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 -8px 40px rgba(0,0,0,0.5);
+      animation: slideUp 0.35s cubic-bezier(0.34,1.56,0.64,1);
     }
 
-    .warning{
-      margin-top:20px;
-      color:#fbbf24;
-      font-size:14px;
-      line-height:1.7;
+    @keyframes slideUp {
+      from { transform: translateY(100%); opacity: 0; }
+      to   { transform: translateY(0);   opacity: 1; }
     }
 
-    @media(max-width:700px){
-      .input-box{
-        flex-direction:column;
-      }
-
-      table{
-        font-size:13px;
-      }
-
-      th, td{
-        padding:10px;
-      }
-    }
-    
-    footer a{
-      color: LightBlue;
-      text-decoration: none;
+    .pwa-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
     }
 
+    .pwa-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 14px;
+      flex-shrink: 0;
+      object-fit: cover;
+    }
+
+    .pwa-title {
+      font-size: 17px;
+      font-weight: bold;
+      color: #f1f5f9;
+      line-height: 1.3;
+    }
+
+    .pwa-sub {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-top: 3px;
+    }
+
+    .pwa-desc {
+      font-size: 13.5px;
+      color: #cbd5e1;
+      line-height: 1.6;
+      margin-bottom: 22px;
+    }
+
+    .pwa-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .pwa-install-btn {
+      flex: 1;
+      padding: 13px;
+      background: #38bdf8;
+      color: #000;
+      font-weight: bold;
+      font-size: 15px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .pwa-install-btn:hover { background: #0ea5e9; }
+
+    .pwa-dismiss-btn {
+      padding: 13px 18px;
+      background: #334155;
+      color: #94a3b8;
+      font-size: 14px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .pwa-dismiss-btn:hover { background: #475569; }
+
+    /* ── Responsive ── */
+    @media (max-width: 620px) {
+      h1 { font-size: 1.3rem; }
+      .input-box { flex-direction: column; }
+      th, td { padding: 10px 8px; font-size: 12.5px; }
+      .phase-btn { padding: 9px 16px; font-size: 13px; }
+    }
   </style>
 </head>
 <body>
 
+<!-- ── PWA Install Popup ── -->
+<div id="pwa-overlay">
+  <div id="pwa-popup">
+    <div class="pwa-header">
+      <img class="pwa-icon" src="icon.png" alt="RealOne Signals icon" />
+      <div>
+        <div class="pwa-title">Martingale Calculator</div>
+        <div class="pwa-sub">by RealOne Signals</div>
+      </div>
+    </div>
+    <p class="pwa-desc">
+      Add this tool to your home screen for instant access — works offline, no app store needed.
+    </p>
+    <div class="pwa-buttons">
+      <button class="pwa-install-btn" id="pwa-install-btn">📲 Add to Home Screen</button>
+      <button class="pwa-dismiss-btn" id="pwa-dismiss-btn">Not now</button>
+    </div>
+  </div>
+</div>
+
 <div class="container">
 
-  <h1>5-Phase Martingale Calculator</h1>
+  <h1>Martingale Calculator</h1>
+  <p class="subtitle">Smart Risk Management Tool For Binary Traders</p>
 
-  <p>
-    Smart Risk Management Tool For Binary Traders.
-  </p>
-
-  <div class="input-box">
-
-    <select id="currency">
-      <option value="$">Dollar ($) min: $80</option>
-      <option value="₦">Naira (₦) min: ₦100,000</option>
-    </select>
-
-    <input type="number" id="capital" placeholder="Enter Your Trading Capital">
-
-    <button onclick="generateTable()">Calculate</button>
-
+  <div class="phase-switcher">
+    <button class="phase-btn" data-phases="3" onclick="setPhase(3, this)">3-Phase</button>
+    <button class="phase-btn" data-phases="4" onclick="setPhase(4, this)">4-Phase</button>
+    <button class="phase-btn active" data-phases="5" onclick="setPhase(5, this)">5-Phase</button>
+    <button class="phase-btn" data-phases="6" onclick="setPhase(6, this)">6-Phase</button>
+    <button class="phase-btn" data-phases="7" onclick="setPhase(7, this)">7-Phase</button>
   </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Martingale Phase</th>
-        <th>Entry Capital</th>
-        <th>Total Risked</th>
-        <th>Avg Profit If Win</th>
-      </tr>
-    </thead>
-    <tbody id="resultTable"></tbody>
-  </table>
+  <div class="input-box">
+    <select id="currency" onchange="updateHint()">
+      <option value="$">Dollar ($)</option>
+      <option value="₦">Naira (₦)</option>
+    </select>
+    <input type="number" id="capital" placeholder="Enter your trading capital" oninput="updateHint()" />
+    <button class="calc-btn" onclick="generateTable()">Calculate</button>
+  </div>
+
+  <div class="min-hint" id="minHint">Minimum: $80 for 5-Phase</div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Phase</th>
+          <th>Stake</th>
+          <th>Total Risked</th>
+          <th>Avg Profit If Win</th>
+        </tr>
+      </thead>
+      <tbody id="resultTable">
+        <tr id="emptyRow">
+          <td colspan="4">Enter your capital above and press Calculate.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
   <div class="warning">
     ⚠️ Designed for 85%–95% payout brokers.<br>
@@ -170,115 +353,175 @@
 
 </div>
 
-<script>
-
-function generateTable(){
-
-  const capital = parseInt(document.getElementById("capital").value);
-  const currency = document.getElementById("currency").value;
-
-  if(!capital || capital <= 0){
-    alert("Please enter a valid capital.");
-    return;
-  }
-
-  if(currency === "$" && capital < 50){
-    alert("Minimum dollar capital is $50");
-    return;
-  }
-
-  if(currency === "₦" && capital < 100000){
-    alert("Minimum naira capital is ₦100,000");
-    return;
-  }
-
-  const tbody = document.getElementById("resultTable");
-  tbody.innerHTML = "";
-
-  const payoutMin = 0.85;
-  const payoutMax = 0.95;
-  const payoutAvg = 0.90;
-
-  let totalLoss = 0;
-
-  let targetProfit;
-
-  if(currency === "$"){
-    targetProfit = Math.max(1, Math.floor(capital * 0.02));
-  } else {
-    targetProfit = Math.max(500, Math.floor((capital * 0.02) / 500) * 500);
-  }
-
-  function format(amount){
-    return amount.toLocaleString();
-  }
-
-  for(let i = 0; i < 5; i++){
-
-    let entry = Math.ceil((totalLoss + targetProfit) / payoutAvg);
-
-    if(currency === "₦"){
-      entry = Math.ceil(entry / 500) * 500;
-    }
-
-    const minProfit = Math.floor(entry * payoutMin);
-    const maxProfit = Math.floor(entry * payoutMax);
-
-    const avgProfit = Math.floor((minProfit + maxProfit) / 2);
-
-    totalLoss += entry;
-
-    let phase =
-      i === 0 ? "1st MTG" :
-      i === 1 ? "2nd MTG" :
-      i === 2 ? "3rd MTG" :
-      i === 3 ? "4th MTG" :
-      "5th MTG";
-
-    tbody.innerHTML += `
-      <tr>
-        <td>${phase}</td>
-        <td>${currency}${format(entry)}</td>
-        <td>${currency}${format(totalLoss)}</td>
-        <td class="profit">${currency}${format(avgProfit)}</td>
-      </tr>
-    `;
-  }
-}
-
-// Allow Enter / Go button to trigger calculation
-document.addEventListener("keydown", function(event){
-
-  if(event.key === "Enter"){
-    event.preventDefault();
-    generateTable();
-  }
-
-});
-
-// Close keyboard after pressing Enter / Go
-document.addEventListener("keydown", function(event){
-
-  if(event.key === "Enter"){
-    event.preventDefault();
-
-    // remove focus from input (this closes keyboard on mobile)
-    document.activeElement.blur();
-
-    generateTable();
-  }
-
-});
-
-</script>
-<br>
-<footer class="footer" style="font-size: 12px">
-   <p>All Rights reserved!
-   <a href="#" ></a>
-  <a href="https://t.me/+kaGo488gPkg5NzRk" style="">
-    — @realonesignals
-  </a></p>
+<footer>
+  <p>All Rights Reserved ➤ <a href="https://t.me/+kaGo488gPkg5NzRk">@realonesignals</a></p>
 </footer>
 
+<script>
+
+  // ── PWA Install Prompt ──────────────────────────────────────────────────────
+  let deferredPrompt = null;
+  const overlay     = document.getElementById("pwa-overlay");
+  const installBtn  = document.getElementById("pwa-install-btn");
+  const dismissBtn  = document.getElementById("pwa-dismiss-btn");
+
+  // Capture the native browser install event
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+
+    // Only show if user hasn't dismissed before
+    if (!localStorage.getItem("pwa-dismissed")) {
+      setTimeout(() => overlay.classList.add("show"), 1200);
+    }
+  });
+
+  // User tapped "Add to Home Screen"
+  installBtn.addEventListener("click", async () => {
+    overlay.classList.remove("show");
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      if (outcome === "accepted") localStorage.setItem("pwa-dismissed", "1");
+    }
+  });
+
+  // User tapped "Not now"
+  dismissBtn.addEventListener("click", () => {
+    overlay.classList.remove("show");
+    localStorage.setItem("pwa-dismissed", "1");
+  });
+
+  // Close overlay if tapping the dark background
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) {
+      overlay.classList.remove("show");
+      localStorage.setItem("pwa-dismissed", "1");
+    }
+  });
+
+  // Register service worker
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("sw.js").catch(() => {});
+    });
+  }
+
+  // ── Calculator ──────────────────────────────────────────────────────────────
+  const PAYOUT_AVG = 0.90;
+  const PAYOUT_MIN = 0.85;
+
+  const MINIMUMS = {
+    3: { "$": 20,  "₦": 25000  },
+    4: { "$": 40,  "₦": 55000  },
+    5: { "$": 80,  "₦": 100000 },
+    6: { "$": 150, "₦": 200000 },
+    7: { "$": 250, "₦": 340000 }
+  };
+
+  let activePhases = 5;
+
+  function setPhase(n, btn) {
+    activePhases = n;
+    document.querySelectorAll(".phase-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    updateHint();
+    const tb = document.getElementById("resultTable");
+    if (tb.rows.length && tb.rows[0].id !== "emptyRow") generateTable();
+  }
+
+  function updateHint() {
+    const currency = document.getElementById("currency").value;
+    const capital  = parseFloat(document.getElementById("capital").value) || 0;
+    const min      = MINIMUMS[activePhases][currency];
+    const hint     = document.getElementById("minHint");
+    const label    = currency === "$" ? `$${min.toLocaleString()}` : `₦${min.toLocaleString()}`;
+
+    if (capital > 0 && capital < min) {
+      hint.textContent = `⚠ Minimum for ${activePhases}-Phase is ${label}`;
+      hint.classList.add("warn");
+    } else {
+      hint.textContent = `Minimum: ${label} for ${activePhases}-Phase`;
+      hint.classList.remove("warn");
+    }
+  }
+
+  function fmt(n) { return n.toLocaleString(); }
+
+  function roundUp(value, currency) {
+    if (currency === "₦") return Math.ceil(value / 500) * 500;
+    return Math.ceil(value);
+  }
+
+  const ORDINALS = ["1st","2nd","3rd","4th","5th","6th","7th"];
+
+  function computeStakes(targetProfit, phases, currency) {
+    const stakes = [];
+    let cumulative = 0;
+    for (let i = 0; i < phases; i++) {
+      const needed = cumulative + targetProfit;
+      const stake  = roundUp(needed / PAYOUT_MIN, currency);
+      stakes.push(stake);
+      cumulative += stake;
+    }
+    return { stakes, totalRisked: cumulative };
+  }
+
+  function generateTable() {
+    const currency = document.getElementById("currency").value;
+    const capital  = parseFloat(document.getElementById("capital").value);
+    const min      = MINIMUMS[activePhases][currency];
+
+    if (!capital || capital <= 0) { alert("Please enter a valid capital."); return; }
+    if (capital < min) {
+      const label = currency === "$" ? `$${min}` : `₦${min.toLocaleString()}`;
+      alert(`Minimum capital for ${activePhases}-Phase is ${label}`);
+      return;
+    }
+
+    const tbody = document.getElementById("resultTable");
+    tbody.innerHTML = "";
+
+    const step = currency === "₦" ? 500 : 1;
+    let lo = step, hi = capital, best = step;
+    while (lo <= hi) {
+      const mid = currency === "₦"
+        ? Math.floor((lo + hi) / 2 / 500) * 500
+        : Math.floor((lo + hi) / 2);
+      const { totalRisked } = computeStakes(mid, activePhases, currency);
+      if (totalRisked <= capital) { best = mid; lo = mid + step; }
+      else { hi = mid - step; }
+    }
+
+    const { stakes } = computeStakes(best, activePhases, currency);
+    let cumulative = 0;
+
+    for (let i = 0; i < activePhases; i++) {
+      const stake     = stakes[i];
+      cumulative     += stake;
+      const avgPayout = Math.floor(stake * PAYOUT_AVG);
+      const label     = i === 0 ? "1st Entry" : `${ORDINALS[i - 1]} MTG`;
+      const badgeCls  = i === 0 ? "badge-entry" : "badge-mtg";
+
+      tbody.innerHTML += `
+        <tr data-row="${i === 0 ? 'entry' : 'mtg-' + i}">
+          <td><span class="badge ${badgeCls}">${label}</span></td>
+          <td>${currency}${fmt(stake)}</td>
+          <td>${currency}${fmt(cumulative)}</td>
+          <td class="profit">${currency}${fmt(avgPayout)}</td>
+        </tr>`;
+    }
+
+    updateHint();
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { e.preventDefault(); document.activeElement.blur(); generateTable(); }
+  });
+
+  updateHint();
+
+</script>
 </body>
 </html>
