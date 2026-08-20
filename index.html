@@ -7,505 +7,1304 @@
 <title>Martingale Calculator — @realonesignals</title>
 
 <meta name="description" content="Smart Martingale Risk Management Tool for Binary Traders by RealOne Signals">
-<meta name="theme-color" content="#2563eb">
+<meta name="theme-color" content="#070b14">
 
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="MTG Calc">
 
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon.png">
 
 <style>
+
 /* =========================================================
    RESET
 ========================================================= */
+
 *,*::before,*::after{
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:Arial,sans-serif;
+    font-family:Inter,Arial,sans-serif;
 }
 
+
 /* =========================================================
-   TRADING LIGHT THEME
+   PREMIUM DARK TRADING THEME
 ========================================================= */
+
 :root{
-    --bg:#f4f7fb;
-    --surface:#ffffff;
-    --surface-soft:#f8fafc;
-    --surface-blue:#eff6ff;
 
-    --border:#dbe3ee;
-    --border-blue:#bfdbfe;
+    --bg:#050810;
+    --bg2:#080d18;
 
-    --text:#0f172a;
-    --text-secondary:#475569;
-    --text-muted:#64748b;
+    --card:#0b1220;
+    --card2:#0e1728;
+
+    --input:#101b2d;
+
+    --border:#1b2a42;
+    --border-light:#243653;
+
+    --text:#f8fafc;
+    --text2:#a7b4c8;
+    --muted:#64748b;
 
     /* Sapphire */
     --sapphire:#2563eb;
-    --sapphire-dark:#1d4ed8;
-    --sapphire-light:#dbeafe;
+    --sapphire2:#3b82f6;
+    --sapphire-light:#60a5fa;
 
-    /* Candlestick Green */
-    --green:#16a34a;
-    --green-dark:#15803d;
-    --green-light:#dcfce7;
+    /* Green candle */
+    --green:#22c55e;
+    --green2:#16a34a;
+    --green-glow:rgba(34,197,94,.18);
 
-    /* Candlestick Red */
-    --red:#dc2626;
-    --red-dark:#b91c1c;
-    --red-light:#fee2e2;
+    /* Red candle */
+    --red:#ef4444;
+    --red2:#dc2626;
+    --red-glow:rgba(239,68,68,.17);
 
-    --warning:#d97706;
-    --warning-light:#fef3c7;
+    --yellow:#f59e0b;
 
-    --shadow:0 8px 30px rgba(15,23,42,.08);
+    --shadow:
+        0 25px 70px rgba(0,0,0,.42);
+
+    --blue-glow:
+        0 0 35px rgba(37,99,235,.16);
 }
+
 
 /* =========================================================
    BODY
 ========================================================= */
+
 body{
-    background:var(--bg);
-    color:var(--text);
-    padding:30px 16px;
+
     min-height:100vh;
+
+    color:var(--text);
+
+    padding:30px 16px;
+
+    background:
+
+        radial-gradient(
+            circle at 15% 0%,
+            rgba(37,99,235,.14),
+            transparent 32%
+        ),
+
+        radial-gradient(
+            circle at 90% 15%,
+            rgba(59,130,246,.08),
+            transparent 28%
+        ),
+
+        radial-gradient(
+            circle at 50% 100%,
+            rgba(37,99,235,.06),
+            transparent 35%
+        ),
+
+        linear-gradient(
+            145deg,
+            var(--bg),
+            var(--bg2)
+        );
+
+    overflow-x:hidden;
 }
 
+
 /* =========================================================
-   MAIN CONTAINER
+   DECORATIVE BACKGROUND GRID
 ========================================================= */
-.container{
-    max-width:980px;
-    margin:auto;
-    background:var(--surface);
-    padding:28px 25px;
-    border-radius:16px;
-    border:1px solid var(--border);
-    box-shadow:var(--shadow);
+
+body::before{
+
+    content:"";
+
+    position:fixed;
+
+    inset:0;
+
+    pointer-events:none;
+
+    opacity:.22;
+
+    background-image:
+
+        linear-gradient(
+            rgba(96,165,250,.035) 1px,
+            transparent 1px
+        ),
+
+        linear-gradient(
+            90deg,
+            rgba(96,165,250,.035) 1px,
+            transparent 1px
+        );
+
+    background-size:40px 40px;
+
+    mask-image:
+        linear-gradient(
+            to bottom,
+            black,
+            transparent 80%
+        );
+
 }
+
+
+/* =========================================================
+   MAIN CARD
+========================================================= */
+
+.container{
+
+    position:relative;
+
+    max-width:980px;
+
+    margin:auto;
+
+    padding:30px 27px;
+
+    background:
+
+        linear-gradient(
+            145deg,
+            rgba(14,23,40,.96),
+            rgba(7,13,24,.97)
+        );
+
+    border:1px solid rgba(96,165,250,.12);
+
+    border-radius:22px;
+
+    box-shadow:
+        var(--shadow),
+        inset 0 1px 0 rgba(255,255,255,.025);
+
+    backdrop-filter:blur(18px);
+
+    overflow:hidden;
+}
+
+
+/* top sapphire line */
+
+.container::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:0;
+    left:10%;
+    right:10%;
+
+    height:1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #3b82f6,
+            transparent
+        );
+
+    box-shadow:
+        0 0 18px #2563eb;
+
+}
+
 
 /* =========================================================
    HEADER
 ========================================================= */
+
 h1{
+
     text-align:center;
-    margin-bottom:6px;
-    color:var(--sapphire);
-    font-size:1.65rem;
+
+    margin-bottom:7px;
+
+    font-size:1.75rem;
+
     letter-spacing:.5px;
+
+    font-weight:800;
+
+    background:
+        linear-gradient(
+            90deg,
+            #60a5fa,
+            #3b82f6,
+            #93c5fd
+        );
+
+    -webkit-background-clip:text;
+    background-clip:text;
+
+    color:transparent;
+
+    text-shadow:
+        0 0 30px rgba(37,99,235,.18);
 }
 
+
 .subtitle{
+
     text-align:center;
-    margin-bottom:22px;
-    color:var(--text-secondary);
-    font-size:14px;
+
+    margin-bottom:25px;
+
+    color:var(--text2);
+
+    font-size:13px;
+
+    letter-spacing:.3px;
 }
+
+
+/* =========================================================
+   SMALL STATUS INDICATOR
+========================================================= */
+
+.subtitle::before{
+
+    content:"";
+
+    display:inline-block;
+
+    width:7px;
+    height:7px;
+
+    margin-right:7px;
+
+    border-radius:50%;
+
+    background:var(--green);
+
+    box-shadow:
+        0 0 10px var(--green);
+
+    vertical-align:middle;
+
+    animation:pulse 1.8s infinite;
+}
+
+@keyframes pulse{
+
+    0%,100%{
+        opacity:1;
+        transform:scale(1);
+    }
+
+    50%{
+        opacity:.45;
+        transform:scale(.75);
+    }
+
+}
+
 
 /* =========================================================
    PHASE SWITCHER
 ========================================================= */
+
 .phase-switcher{
+
     display:flex;
+
     justify-content:center;
-    gap:10px;
+
+    gap:8px;
+
     margin-bottom:22px;
+
+    padding:6px;
+
     flex-wrap:wrap;
+
+    background:
+        rgba(4,9,18,.65);
+
+    border:1px solid var(--border);
+
+    border-radius:14px;
 }
+
 
 .phase-btn{
-    padding:10px 22px;
-    border:2px solid var(--border);
-    background:var(--surface);
-    color:var(--text-secondary);
-    font-size:14px;
-    font-weight:bold;
-    border-radius:8px;
+
+    position:relative;
+
+    padding:10px 19px;
+
+    border:1px solid transparent;
+
+    background:transparent;
+
+    color:#8291a8;
+
+    font-size:13px;
+
+    font-weight:700;
+
+    border-radius:9px;
+
     cursor:pointer;
-    transition:all .25s;
-    letter-spacing:.3px;
+
+    transition:
+        .25s ease;
+
+    letter-spacing:.2px;
 }
+
 
 .phase-btn:hover{
-    border-color:var(--sapphire);
-    color:var(--sapphire);
-    background:var(--surface-blue);
+
+    color:#dbeafe;
+
+    background:
+        rgba(37,99,235,.08);
+
+    border-color:
+        rgba(59,130,246,.18);
 }
+
 
 .phase-btn.active{
-    background:var(--sapphire);
-    border-color:var(--sapphire);
+
     color:white;
-    box-shadow:0 4px 12px rgba(37,99,235,.22);
+
+    background:
+
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #1d4ed8
+        );
+
+    border-color:#3b82f6;
+
+    box-shadow:
+
+        0 5px 20px
+        rgba(37,99,235,.30),
+
+        inset 0 1px 0
+        rgba(255,255,255,.15);
 }
 
+
 /* =========================================================
-   INPUT AREA
+   INPUT PANEL
 ========================================================= */
+
 .input-box{
+
     display:flex;
+
     gap:10px;
-    margin-bottom:14px;
+
+    margin-bottom:12px;
+
     flex-wrap:wrap;
+
+    padding:5px;
 }
+
+
+/* =========================================================
+   INPUTS
+========================================================= */
 
 select,
 input[type=number]{
+
     flex:1;
+
     min-width:160px;
-    padding:14px 15px;
+
+    padding:15px 16px;
+
     border:1px solid var(--border);
-    border-radius:10px;
-    font-size:15px;
+
+    border-radius:11px;
+
+    font-size:14px;
+
     outline:none;
-    background:var(--surface-soft);
-    color:var(--text);
-    transition:.2s;
+
+    background:
+
+        linear-gradient(
+            145deg,
+            #111d30,
+            #0d1727
+        );
+
+    color:#f8fafc;
+
+    transition:.25s;
+
+    box-shadow:
+        inset 0 1px 0
+        rgba(255,255,255,.025);
 }
+
+
+select:hover,
+input[type=number]:hover{
+
+    border-color:#294263;
+}
+
 
 select:focus,
 input[type=number]:focus{
-    border-color:var(--sapphire);
-    background:white;
-    box-shadow:0 0 0 3px rgba(37,99,235,.10);
+
+    border-color:var(--sapphire2);
+
+    box-shadow:
+
+        0 0 0 3px
+        rgba(37,99,235,.10),
+
+        0 0 22px
+        rgba(37,99,235,.10);
 }
 
+
 select option{
-    background:white;
-    color:var(--text);
+
+    background:#0d1727;
+
+    color:white;
 }
+
 
 /* =========================================================
    CALCULATE BUTTON
 ========================================================= */
+
 button.calc-btn{
-    padding:14px 26px;
-    border:none;
-    background:var(--sapphire);
+
+    position:relative;
+
+    overflow:hidden;
+
+    padding:14px 27px;
+
+    border:1px solid #3b82f6;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #1d4ed8
+        );
+
     color:white;
-    font-weight:bold;
-    font-size:15px;
-    border-radius:10px;
+
+    font-weight:800;
+
+    font-size:14px;
+
+    border-radius:11px;
+
     cursor:pointer;
-    transition:all .25s;
+
+    transition:.25s;
+
     white-space:nowrap;
+
+    box-shadow:
+        0 7px 22px
+        rgba(37,99,235,.25);
 }
+
+
+button.calc-btn::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:0;
+    left:-100%;
+
+    width:60%;
+
+    height:100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,.22),
+            transparent
+        );
+
+    transform:skewX(-20deg);
+
+    transition:.5s;
+}
+
+
+button.calc-btn:hover::before{
+
+    left:140%;
+}
+
 
 button.calc-btn:hover{
-    background:var(--sapphire-dark);
-    transform:translateY(-1px);
-    box-shadow:0 5px 15px rgba(37,99,235,.22);
+
+    transform:translateY(-2px);
+
+    background:
+        linear-gradient(
+            135deg,
+            #3b82f6,
+            #2563eb
+        );
+
+    box-shadow:
+        0 10px 30px
+        rgba(37,99,235,.34);
 }
+
 
 button.calc-btn:active{
+
     transform:translateY(0);
+
 }
+
 
 /* =========================================================
-   MINIMUM CAPITAL HINT
+   HINT
 ========================================================= */
+
 .min-hint{
+
     text-align:center;
-    font-size:12.5px;
-    color:var(--text-muted);
-    margin-bottom:18px;
+
+    font-size:12px;
+
+    color:#718198;
+
+    margin-bottom:17px;
+
     min-height:18px;
-    transition:color .2s;
+
+    transition:.2s;
 }
 
+
 .min-hint.warn{
-    color:var(--red);
-    font-weight:bold;
+
+    color:#ff6b6b;
+
+    font-weight:700;
+
+    text-shadow:
+        0 0 12px
+        rgba(239,68,68,.25);
 }
+
+
+/* =========================================================
+   TABLE CONTAINER
+========================================================= */
+
+.table-wrap{
+
+    overflow-x:auto;
+
+    border-radius:14px;
+
+    border:1px solid var(--border);
+
+    background:#080e19;
+
+    box-shadow:
+        inset 0 1px 0
+        rgba(255,255,255,.02);
+}
+
 
 /* =========================================================
    TABLE
 ========================================================= */
-.table-wrap{
-    overflow-x:auto;
-    border-radius:10px;
-    border:1px solid var(--border);
-}
 
 table{
+
     width:100%;
+
     border-collapse:collapse;
+
     min-width:500px;
-    background:white;
+
+    background:
+        rgba(8,14,25,.9);
 }
+
 
 thead tr{
-    background:#f1f5f9;
+
+    background:
+
+        linear-gradient(
+            90deg,
+            #0e1a2d,
+            #101c30,
+            #0e1a2d
+        );
 }
+
 
 th{
+
     padding:14px 12px;
-    color:var(--sapphire-dark);
-    font-size:13.5px;
+
+    color:#60a5fa;
+
+    font-size:12px;
+
     text-align:center;
+
     white-space:nowrap;
-    border-bottom:1px solid var(--border);
+
+    letter-spacing:.6px;
+
+    text-transform:uppercase;
+
+    border-bottom:
+        1px solid var(--border);
 }
+
 
 td{
-    padding:13px 12px;
+
+    padding:14px 12px;
+
     text-align:center;
-    border-bottom:1px solid #e8edf3;
-    font-size:14px;
-    color:var(--text);
+
+    border-bottom:
+        1px solid rgba(27,42,66,.75);
+
+    font-size:13px;
+
+    color:#dbe5f3;
+
+    transition:.2s;
 }
+
 
 tbody tr:last-child td{
+
     border-bottom:none;
+
 }
+
+
+tbody tr{
+
+    transition:.2s;
+}
+
 
 tbody tr:hover td{
-    background:var(--surface-blue);
+
+    background:
+        rgba(37,99,235,.055);
 }
 
+
 /* =========================================================
-   CANDLESTICK-STYLE BADGES
+   PHASE BADGES
 ========================================================= */
+
 .badge{
-    display:inline-block;
-    padding:4px 10px;
-    border-radius:5px;
-    font-size:12px;
-    font-weight:bold;
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:6px;
+
+    padding:5px 10px;
+
+    border-radius:6px;
+
+    font-size:11px;
+
+    font-weight:800;
+
     letter-spacing:.4px;
 }
 
-/* First entry = bullish green */
+
+/* Green candlestick */
+
 .badge-entry{
-    background:var(--green-light);
-    color:var(--green-dark);
-    border:1px solid #bbf7d0;
+
+    color:#4ade80;
+
+    background:
+        rgba(34,197,94,.09);
+
+    border:
+        1px solid
+        rgba(34,197,94,.22);
+
+    box-shadow:
+        0 0 14px
+        rgba(34,197,94,.06);
 }
 
-/* Martingale = bearish red */
-.badge-mtg{
-    background:var(--red-light);
-    color:var(--red-dark);
-    border:1px solid #fecaca;
+
+.badge-entry::before{
+
+    content:"▲";
+
+    font-size:8px;
 }
+
+
+/* Red candlestick */
+
+.badge-mtg{
+
+    color:#f87171;
+
+    background:
+        rgba(239,68,68,.08);
+
+    border:
+        1px solid
+        rgba(239,68,68,.20);
+
+    box-shadow:
+        0 0 14px
+        rgba(239,68,68,.05);
+}
+
+
+.badge-mtg::before{
+
+    content:"▼";
+
+    font-size:8px;
+}
+
 
 /* =========================================================
    PROFIT
 ========================================================= */
+
 td.profit{
-    color:var(--green);
-    font-weight:bold;
+
+    color:#4ade80;
+
+    font-weight:800;
+
+    text-shadow:
+        0 0 12px
+        rgba(34,197,94,.15);
 }
+
 
 /* =========================================================
    EMPTY TABLE
 ========================================================= */
+
 #emptyRow td{
-    color:var(--text-muted);
-    background:#fafcff;
-    padding:30px;
+
+    color:#53647b;
+
+    background:
+        rgba(5,10,18,.55);
+
+    padding:34px;
+
     font-style:italic;
+
+    font-size:13px;
 }
+
 
 /* =========================================================
    WARNING
 ========================================================= */
+
 .warning{
-    margin-top:20px;
-    color:var(--warning);
-    background:var(--warning-light);
-    border:1px solid #fde68a;
-    border-radius:9px;
-    padding:12px 14px;
-    font-size:13px;
-    line-height:1.8;
+
+    position:relative;
+
+    margin-top:18px;
+
+    padding:13px 15px;
+
+    color:#fbbf24;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(245,158,11,.07),
+            rgba(245,158,11,.025)
+        );
+
+    border:
+        1px solid
+        rgba(245,158,11,.18);
+
+    border-radius:11px;
+
+    font-size:12px;
+
+    line-height:1.75;
 }
+
+
+.warning::before{
+
+    content:"";
+
+    position:absolute;
+
+    left:0;
+    top:10px;
+    bottom:10px;
+
+    width:2px;
+
+    border-radius:2px;
+
+    background:#f59e0b;
+
+    box-shadow:
+        0 0 10px
+        rgba(245,158,11,.45);
+}
+
 
 /* =========================================================
    FOOTER
 ========================================================= */
+
 footer{
+
     text-align:center;
+
     margin-top:22px;
-    font-size:12px;
-    color:var(--text-muted);
+
+    font-size:11px;
+
+    color:#53647b;
 }
+
 
 footer a{
-    color:var(--sapphire);
+
+    color:#60a5fa;
+
     text-decoration:none;
-    font-weight:bold;
+
+    font-weight:700;
+
+    transition:.2s;
 }
 
+
 footer a:hover{
-    color:var(--sapphire-dark);
+
+    color:#93c5fd;
+
+    text-shadow:
+        0 0 10px
+        rgba(96,165,250,.35);
 }
+
 
 /* =========================================================
    PWA OVERLAY
 ========================================================= */
+
 #pwa-overlay{
+
     display:none;
+
     position:fixed;
+
     inset:0;
-    background:rgba(15,23,42,.45);
-    backdrop-filter:blur(3px);
+
+    background:
+        rgba(1,4,10,.72);
+
+    backdrop-filter:
+        blur(8px);
+
     z-index:999;
+
     align-items:flex-end;
+
     justify-content:center;
 }
 
+
 #pwa-overlay.show{
+
     display:flex;
+
 }
+
 
 #pwa-popup{
-    background:white;
-    border:1px solid var(--border);
-    border-radius:20px 20px 0 0;
-    padding:28px 24px 36px;
+
+    background:
+
+        linear-gradient(
+            145deg,
+            #101b2e,
+            #09111f
+        );
+
+    border:
+        1px solid
+        #1d3150;
+
+    border-radius:
+        22px 22px 0 0;
+
+    padding:
+        28px 24px 36px;
+
     width:100%;
+
     max-width:480px;
-    box-shadow:0 -8px 40px rgba(15,23,42,.18);
-    animation:slideUp .35s cubic-bezier(.34,1.56,.64,1);
+
+    box-shadow:
+
+        0 -15px 60px
+        rgba(0,0,0,.55),
+
+        0 0 40px
+        rgba(37,99,235,.08);
+
+    animation:
+        slideUp .35s
+        cubic-bezier(.34,1.56,.64,1);
 }
 
+
 @keyframes slideUp{
+
     from{
         transform:translateY(100%);
         opacity:0;
     }
+
     to{
         transform:translateY(0);
         opacity:1;
     }
+
 }
 
+
 .pwa-header{
+
     display:flex;
+
     align-items:center;
+
     gap:16px;
+
     margin-bottom:16px;
 }
 
+
 .pwa-icon{
+
     width:64px;
+
     height:64px;
-    border-radius:14px;
+
+    border-radius:15px;
+
     flex-shrink:0;
+
     object-fit:cover;
+
+    box-shadow:
+        0 8px 25px
+        rgba(0,0,0,.35);
 }
 
+
 .pwa-title{
+
     font-size:17px;
+
     font-weight:bold;
-    color:var(--text);
+
+    color:#f8fafc;
+
     line-height:1.3;
 }
 
+
 .pwa-sub{
+
     font-size:13px;
-    color:var(--text-muted);
+
+    color:#7f8fa6;
+
     margin-top:3px;
 }
 
+
 .pwa-desc{
-    font-size:13.5px;
-    color:var(--text-secondary);
-    line-height:1.6;
+
+    font-size:13px;
+
+    color:#aab8ca;
+
+    line-height:1.65;
+
     margin-bottom:22px;
 }
 
+
 .pwa-buttons{
+
     display:flex;
+
     gap:10px;
 }
 
+
 .pwa-install-btn{
+
     flex:1;
+
     padding:13px;
-    background:var(--sapphire);
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #1d4ed8
+        );
+
     color:white;
+
     font-weight:bold;
-    font-size:15px;
-    border:none;
+
+    font-size:14px;
+
+    border:
+        1px solid
+        #3b82f6;
+
     border-radius:10px;
+
     cursor:pointer;
+
+    box-shadow:
+        0 7px 20px
+        rgba(37,99,235,.25);
 }
+
 
 .pwa-install-btn:hover{
-    background:var(--sapphire-dark);
+
+    background:
+        linear-gradient(
+            135deg,
+            #3b82f6,
+            #2563eb
+        );
 }
 
+
 .pwa-dismiss-btn{
+
     padding:13px 18px;
-    background:#e2e8f0;
-    color:var(--text-secondary);
-    font-size:14px;
-    border:none;
+
+    background:#142137;
+
+    color:#8999ae;
+
+    font-size:13px;
+
+    border:
+        1px solid
+        #223451;
+
     border-radius:10px;
+
     cursor:pointer;
 }
 
+
 .pwa-dismiss-btn:hover{
-    background:#cbd5e1;
+
+    background:#1a2a42;
+
+    color:#cbd5e1;
 }
+
 
 /* =========================================================
    MOBILE
 ========================================================= */
+
 @media(max-width:620px){
 
     body{
-        padding:18px 10px;
+
+        padding:
+            14px 8px;
+
     }
+
 
     .container{
-        padding:22px 14px;
-        border-radius:13px;
+
+        padding:
+            22px 12px;
+
+        border-radius:17px;
+
     }
+
 
     h1{
-        font-size:1.3rem;
+
+        font-size:1.38rem;
+
     }
 
-    .input-box{
-        flex-direction:column;
+
+    .subtitle{
+
+        font-size:12px;
+
+        margin-bottom:20px;
+
     }
+
+
+    .phase-switcher{
+
+        gap:5px;
+
+        padding:5px;
+
+    }
+
+
+    .phase-btn{
+
+        padding:
+            9px 12px;
+
+        font-size:11.5px;
+
+    }
+
+
+    .input-box{
+
+        flex-direction:column;
+
+        padding:0;
+
+    }
+
 
     select,
     input[type=number],
     button.calc-btn{
+
         width:100%;
+
     }
+
 
     th,
     td{
-        padding:10px 8px;
-        font-size:12.5px;
+
+        padding:
+            11px 8px;
+
+        font-size:11.5px;
+
     }
 
-    .phase-btn{
-        padding:9px 16px;
-        font-size:13px;
+
+    th{
+
+        font-size:10px;
+
     }
+
 
     .warning{
-        font-size:12px;
+
+        font-size:11px;
+
     }
+
 }
+
+
+/* =========================================================
+   EXTRA SMALL DEVICES
+========================================================= */
+
+@media(max-width:380px){
+
+    .phase-btn{
+
+        padding:
+            8px 9px;
+
+        font-size:10.5px;
+
+    }
+
+
+    h1{
+
+        font-size:1.25rem;
+
+    }
+
+}
+
 </style>
 </head>
 
+
 <body>
+
 
 <!-- =========================================================
      PWA INSTALL POPUP
 ========================================================= -->
+
 <div id="pwa-overlay">
 
     <div id="pwa-popup">
@@ -519,6 +1318,7 @@ footer a:hover{
             >
 
             <div>
+
                 <div class="pwa-title">
                     Martingale Calculator
                 </div>
@@ -526,15 +1326,20 @@ footer a:hover{
                 <div class="pwa-sub">
                     by RealOne Signals
                 </div>
+
             </div>
 
         </div>
 
+
         <p class="pwa-desc">
+
             Add this tool to your home screen for quick access.
             An internet connection is required so you always receive
             the latest version.
+
         </p>
+
 
         <div class="pwa-buttons">
 
@@ -544,6 +1349,7 @@ footer a:hover{
             >
                 📲 Add to Home Screen
             </button>
+
 
             <button
                 class="pwa-dismiss-btn"
@@ -560,11 +1366,16 @@ footer a:hover{
 
 
 <!-- =========================================================
-     MAIN APP
+     MAIN APPLICATION
 ========================================================= -->
+
 <div class="container">
 
-    <h1>Martingale Calculator</h1>
+
+    <h1>
+        Martingale Calculator
+    </h1>
+
 
     <p class="subtitle">
         Smart Risk Management Tool For Binary Traders
@@ -572,6 +1383,7 @@ footer a:hover{
 
 
     <!-- PHASE SWITCHER -->
+
     <div class="phase-switcher">
 
         <button
@@ -581,12 +1393,14 @@ footer a:hover{
             3-Phase
         </button>
 
+
         <button
             class="phase-btn"
             onclick="setPhase(4,this)"
         >
             4-Phase
         </button>
+
 
         <button
             class="phase-btn active"
@@ -595,12 +1409,14 @@ footer a:hover{
             5-Phase
         </button>
 
+
         <button
             class="phase-btn"
             onclick="setPhase(6,this)"
         >
             6-Phase
         </button>
+
 
         <button
             class="phase-btn"
@@ -613,12 +1429,15 @@ footer a:hover{
 
 
     <!-- INPUT -->
+
     <div class="input-box">
+
 
         <select
             id="currency"
             onchange="updateHint()"
         >
+
             <option value="$">
                 Dollar ($)
             </option>
@@ -626,6 +1445,7 @@ footer a:hover{
             <option value="₦">
                 Naira (₦)
             </option>
+
         </select>
 
 
@@ -650,6 +1470,7 @@ footer a:hover{
 
 
     <!-- HINT -->
+
     <div
         class="min-hint"
         id="minHint"
@@ -658,7 +1479,8 @@ footer a:hover{
     </div>
 
 
-    <!-- TABLE -->
+    <!-- RESULTS -->
+
     <div class="table-wrap">
 
         <table>
@@ -666,20 +1488,36 @@ footer a:hover{
             <thead>
 
                 <tr>
-                    <th>Phase</th>
-                    <th>Entry amount</th>
-                    <th>Trade Total</th>
-                    <th>Avg Profit If Win</th>
+
+                    <th>
+                        Phase
+                    </th>
+
+                    <th>
+                        Entry amount
+                    </th>
+
+                    <th>
+                        Trade Total
+                    </th>
+
+                    <th>
+                        Avg Profit If Win
+                    </th>
+
                 </tr>
 
             </thead>
+
 
             <tbody id="resultTable">
 
                 <tr id="emptyRow">
 
                     <td colspan="4">
+
                         Enter your capital above and press Calculate.
+
                     </td>
 
                 </tr>
@@ -692,6 +1530,7 @@ footer a:hover{
 
 
     <!-- WARNING -->
+
     <div class="warning">
 
         ⚠️ Designed for 85%–95% payout brokers.<br>
@@ -701,16 +1540,20 @@ footer a:hover{
 
     </div>
 
+
 </div>
 
 
 <!-- =========================================================
      FOOTER
 ========================================================= -->
+
 <footer>
 
     <p>
+
         All Rights Reserved ➤
+
         <a
             href="https://t.me/+kaGo488gPkg5NzRk"
             target="_blank"
@@ -718,6 +1561,7 @@ footer a:hover{
         >
             @realonesignals
         </a>
+
     </p>
 
 </footer>
@@ -725,17 +1569,21 @@ footer a:hover{
 
 <script>
 
+
 /* =========================================================
    PWA INSTALL SYSTEM
 ========================================================= */
 
 let deferredPrompt = null;
 
+
 const overlay =
     document.getElementById("pwa-overlay");
 
+
 const installBtn =
     document.getElementById("pwa-install-btn");
+
 
 const dismissBtn =
     document.getElementById("pwa-dismiss-btn");
@@ -749,10 +1597,16 @@ window.addEventListener(
 
         deferredPrompt = e;
 
-        if(!localStorage.getItem("pwa-dismissed")){
+
+        if(
+            !localStorage.getItem(
+                "pwa-dismissed"
+            )
+        ){
 
             setTimeout(
-                () => overlay.classList.add("show"),
+                () =>
+                    overlay.classList.add("show"),
                 1200
             );
 
@@ -768,16 +1622,22 @@ installBtn.addEventListener(
 
         overlay.classList.remove("show");
 
+
         if(deferredPrompt){
 
             deferredPrompt.prompt();
 
+
             const {outcome} =
                 await deferredPrompt.userChoice;
 
+
             deferredPrompt = null;
 
-            if(outcome === "accepted"){
+
+            if(
+                outcome === "accepted"
+            ){
 
                 localStorage.setItem(
                     "pwa-dismissed",
@@ -798,6 +1658,7 @@ dismissBtn.addEventListener(
 
         overlay.classList.remove("show");
 
+
         localStorage.setItem(
             "pwa-dismissed",
             "1"
@@ -813,7 +1674,10 @@ overlay.addEventListener(
 
         if(e.target === overlay){
 
-            overlay.classList.remove("show");
+            overlay.classList.remove(
+                "show"
+            );
+
 
             localStorage.setItem(
                 "pwa-dismissed",
@@ -842,7 +1706,8 @@ if("serviceWorker" in navigator){
                     await navigator.serviceWorker.register(
                         "sw.js",
                         {
-                            updateViaCache:"none"
+                            updateViaCache:
+                                "none"
                         }
                     );
 
@@ -885,6 +1750,7 @@ if("serviceWorker" in navigator){
                         const worker =
                             registration.installing;
 
+
                         if(!worker) return;
 
 
@@ -894,12 +1760,14 @@ if("serviceWorker" in navigator){
 
                                 if(
                                     worker.state ===
-                                    "installed" &&
-                                    navigator.serviceWorker.controller
+                                        "installed" &&
+                                    navigator.serviceWorker
+                                        .controller
                                 ){
 
                                     worker.postMessage({
-                                        type:"SKIP_WAITING"
+                                        type:
+                                            "SKIP_WAITING"
                                     });
 
                                 }
@@ -920,7 +1788,9 @@ if("serviceWorker" in navigator){
 
                         if(refreshing) return;
 
+
                         refreshing = true;
+
 
                         window.location.reload();
 
@@ -952,23 +1822,21 @@ const PAYOUT_AVG = .90;
 const PAYOUT_MIN = .85;
 
 
-/*
-    Maximum total risk
-*/
 const MAX_RISK_PERCENT = {
 
     3:.55,
+
     4:.55,
+
     5:.65,
+
     6:.65,
+
     7:.65
 
 };
 
 
-/*
-    Minimum capital
-*/
 const MINIMUMS = {
 
     3:{
@@ -1003,7 +1871,7 @@ let activePhases = 5;
 
 
 /* =========================================================
-   PHASE
+   SET PHASE
 ========================================================= */
 
 function setPhase(n,btn){
@@ -1014,7 +1882,10 @@ function setPhase(n,btn){
     document
         .querySelectorAll(".phase-btn")
         .forEach(
-            b => b.classList.remove("active")
+            b =>
+                b.classList.remove(
+                    "active"
+                )
         );
 
 
@@ -1025,12 +1896,15 @@ function setPhase(n,btn){
 
 
     const tb =
-        document.getElementById("resultTable");
+        document.getElementById(
+            "resultTable"
+        );
 
 
     if(
         tb.rows.length &&
-        tb.rows[0].id !== "emptyRow"
+        tb.rows[0].id !==
+            "emptyRow"
     ){
 
         generateTable();
@@ -1041,31 +1915,41 @@ function setPhase(n,btn){
 
 
 /* =========================================================
-   CAPITAL HINT
+   UPDATE HINT
 ========================================================= */
 
 function updateHint(){
 
     const currency =
-        document.getElementById("currency").value;
+        document.getElementById(
+            "currency"
+        ).value;
 
 
     const capital =
         parseFloat(
-            document.getElementById("capital").value
+            document.getElementById(
+                "capital"
+            ).value
         ) || 0;
 
 
     const min =
-        MINIMUMS[activePhases][currency];
+        MINIMUMS[
+            activePhases
+        ][currency];
 
 
     const risk =
-        MAX_RISK_PERCENT[activePhases];
+        MAX_RISK_PERCENT[
+            activePhases
+        ];
 
 
     const hint =
-        document.getElementById("minHint");
+        document.getElementById(
+            "minHint"
+        );
 
 
     const label =
@@ -1082,14 +1966,20 @@ function updateHint(){
         hint.textContent =
             `⚠ Minimum for ${activePhases}-Phase is ${label}`;
 
-        hint.classList.add("warn");
+
+        hint.classList.add(
+            "warn"
+        );
 
     }else{
 
         hint.textContent =
             `Maximum Trade Total: ${risk * 100}% of capital`;
 
-        hint.classList.remove("warn");
+
+        hint.classList.remove(
+            "warn"
+        );
 
     }
 
@@ -1097,7 +1987,7 @@ function updateHint(){
 
 
 /* =========================================================
-   NUMBER FORMATTING
+   FORMAT NUMBER
 ========================================================= */
 
 function fmt(n){
@@ -1110,7 +2000,7 @@ function fmt(n){
 
 
 /* =========================================================
-   TRADING AMOUNT ROUNDING
+   ROUND TRADING AMOUNT
 ========================================================= */
 
 function roundTradingAmount(
@@ -1119,7 +2009,11 @@ function roundTradingAmount(
 ){
 
     return currency === "₦"
-        ? Math.ceil(value / 500) * 500
+
+        ? Math.ceil(
+            value / 500
+        ) * 500
+
         : Math.ceil(value);
 
 }
@@ -1135,10 +2029,11 @@ function getTradingStep(currency){
 
 
 /* =========================================================
-   ORDINAL LABELS
+   ORDINALS
 ========================================================= */
 
 const ORDINALS = [
+
     "1st",
     "2nd",
     "3rd",
@@ -1146,6 +2041,7 @@ const ORDINALS = [
     "5th",
     "6th",
     "7th"
+
 ];
 
 
@@ -1171,17 +2067,20 @@ function computeStakes(
     ){
 
         const needed =
-            cumulative + targetProfit;
+            cumulative +
+            targetProfit;
 
 
         const stake =
             roundTradingAmount(
-                needed / PAYOUT_MIN,
+                needed /
+                    PAYOUT_MIN,
                 currency
             );
 
 
         stakes.push(stake);
+
 
         cumulative += stake;
 
@@ -1210,11 +2109,16 @@ function findBestTargetProfit(
 ){
 
     const riskBudget =
-        capital * MAX_RISK_PERCENT[phases];
+        capital *
+        MAX_RISK_PERCENT[
+            phases
+        ];
 
 
     const step =
-        getTradingStep(currency);
+        getTradingStep(
+            currency
+        );
 
 
     let low = step;
@@ -1224,16 +2128,24 @@ function findBestTargetProfit(
     let best = step;
 
 
-    while(low <= high){
+    while(
+        low <= high
+    ){
 
         let mid =
             currency === "₦"
+
                 ? Math.floor(
-                    ((low + high) / 2) / 500
-                  ) * 500
+                    (
+                        (low + high) /
+                        2
+                    ) / 500
+                ) * 500
+
                 : Math.floor(
-                    (low + high) / 2
-                  );
+                    (low + high) /
+                    2
+                );
 
 
         if(mid < step){
@@ -1283,17 +2195,23 @@ function findBestTargetProfit(
 function generateTable(){
 
     const currency =
-        document.getElementById("currency").value;
+        document.getElementById(
+            "currency"
+        ).value;
 
 
     const capital =
         parseFloat(
-            document.getElementById("capital").value
+            document.getElementById(
+                "capital"
+            ).value
         );
 
 
     const min =
-        MINIMUMS[activePhases][currency];
+        MINIMUMS[
+            activePhases
+        ][currency];
 
 
     if(
@@ -1310,7 +2228,9 @@ function generateTable(){
     }
 
 
-    if(capital < min){
+    if(
+        capital < min
+    ){
 
         const label =
             currency === "$"
@@ -1338,13 +2258,17 @@ function generateTable(){
 
     const result =
         computeStakes(
+
             findBestTargetProfit(
                 capital,
                 activePhases,
                 currency
             ),
+
             activePhases,
+
             currency
+
         );
 
 
@@ -1366,45 +2290,57 @@ function generateTable(){
 
         const avgPayout =
             Math.floor(
-                stake * PAYOUT_AVG
+                stake *
+                PAYOUT_AVG
             );
 
 
         const label =
             i === 0
+
                 ? "1st Entry"
+
                 : `${ORDINALS[i - 1]} MTG`;
 
 
         const badgeCls =
             i === 0
+
                 ? "badge-entry"
+
                 : "badge-mtg";
 
 
         tbody.innerHTML += `
 
-            <tr data-row="${
-                i === 0
-                    ? "entry"
-                    : "mtg-" + i
-            }">
+            <tr
+                data-row="${
+                    i === 0
+                        ? "entry"
+                        : "mtg-" + i
+                }"
+            >
 
                 <td>
+
                     <span
                         class="badge ${badgeCls}"
                     >
                         ${label}
                     </span>
+
                 </td>
+
 
                 <td>
                     ${currency}${fmt(stake)}
                 </td>
 
+
                 <td>
                     ${currency}${fmt(cumulative)}
                 </td>
+
 
                 <td class="profit">
                     ${currency}${fmt(avgPayout)}
@@ -1423,7 +2359,7 @@ function generateTable(){
 
 
 /* =========================================================
-   ENTER KEY = CALCULATE
+   ENTER = CALCULATE
 ========================================================= */
 
 document.addEventListener(
@@ -1434,9 +2370,11 @@ document.addEventListener(
 
             e.preventDefault();
 
+
             document
                 .activeElement
                 .blur();
+
 
             generateTable();
 
